@@ -1,11 +1,10 @@
+import speech_recognition as sr
+
+
+# init recognizer
+recognizer = sr.Recognizer()
 
 
 
+print("This is Tardis")
 
-
-
-
-if __name__ = "__main__":
-
-
-    print("Tardis")
