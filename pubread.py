@@ -16,6 +16,7 @@ def extract_text_from_audio(audio_file):
     r = sr.Recognizer()
     data = sr.AudioFile(audio_file)
     with data as source:
+        r.adjust_for_ambient_noise(source)
         audio = r.record(source)
     text = r.recognize_google(audio)
     return text
