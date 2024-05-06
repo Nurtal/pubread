@@ -1,7 +1,7 @@
 import chromadb
 import pandas as pd
 import glob
-
+from progress.bar import FillingCirclesBar
 
 
 
@@ -13,7 +13,9 @@ def create_vector_store(pubmed_data_folder, chroma_folder):
     collection = chroma_client.create_collection(name="pubmed")
 
     # load documents
-    for pubmed_file in glob.glob(f"{pubmed_data_folder}/*.parquet"):
+    pubmed_file_list = list(glob.glob(f"{pubmed_data_folder}/*.parquet"))
+    bar = FillingCirclesBar("[VECTOR STORE GENERATION]", max=len(pubmed_file_list))
+    for pubmed_file in pubmed_file_list:
 
         document_list = []
         metadatas = []
@@ -36,20 +38,21 @@ def create_vector_store(pubmed_data_folder, chroma_folder):
             authors = row['AUTHORS']
 
             # forge data to add
-            document_list.append(text)
-            metadatas.append({"PMID":pmid,
-                             "DATE":publication_date,
-                             "JOURNAL":journal,
-                             "JOURNAL_COUNTRY":journal_country,
-                             "TYPE":article_type,
-                             "LANGUAGE":article_language,
-                             "MESH":mesh,
-                             "MESH_ID":mesh_id,
-                             "CHEM":chem,
-                             "CHEM_ID":chem_id,
-                             "AUTHORS":authors
-                         })
-            ids.append(pmid)
+            if pmid not in ids:
+                document_list.append(text)
+                metadatas.append({"PMID":pmid,
+                                 "DATE":publication_date,
+                                 "JOURNAL":journal,
+                                 "JOURNAL_COUNTRY":journal_country,
+                                 "TYPE":article_type,
+                                 "LANGUAGE":article_language,
+                                 "MESH":mesh,
+                                 "MESH_ID":mesh_id,
+                                 "CHEM":chem,
+                                 "CHEM_ID":chem_id,
+                                 "AUTHORS":authors
+                             })
+                ids.append(pmid)
 
         # add document to collection
         collection.add(
@@ -57,6 +60,9 @@ def create_vector_store(pubmed_data_folder, chroma_folder):
             metadatas=metadatas,
             ids=ids
         )
+
+        # update progress bar
+        bar.next()
 
 
             
