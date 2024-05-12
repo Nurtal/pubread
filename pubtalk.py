@@ -15,4 +15,4 @@ def tell_from_text(text:str)->None:
 
 if __name__ == "__main__":
 
-    speek_from_text("Hello World !")
+    tell_from_text("Say paa leure de l'apaaaaro ?")
